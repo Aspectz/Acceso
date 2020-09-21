@@ -16,14 +16,18 @@ public class App {
 		// TODO Auto-generated method stub
 
 		int opc=0;
-		
+		System.out.println("Quieres cargar el arraylist: ");
+		String answ=entrada.nextLine();
+		if(answ.equalsIgnoreCase("si")) {
+			cargarArrayList();
+		}
 		do {
+			
+			
 			verMenu();
 			System.out.println("Introduce una opcion: ");
 			opc=Integer.parseInt(entrada.nextLine()); 
 			switch(opc) {
-				case 1:
-					break;
 				case 2:
 					altaUsuarios();
 					break;
@@ -71,7 +75,6 @@ public class App {
 						File f=new File(ruta);
 						moverPapelera(f);
 						borrarArchivo(ruta);
-						
 					}
 					 
 					break;
@@ -91,8 +94,6 @@ public class App {
 	}
 	
 	public static void verMenu() {
-		
-		System.out.println("1-Cargar usuarios");
 		System.out.println("2-Alta de usuarios");
 		System.out.println("3-Crear archivo dni");
 		System.out.println("4-Modificar el dni del usuario.");
@@ -190,33 +191,26 @@ public class App {
 				case 0:
 					System.out.println("Introduce tu titulacion: ");
 					String titulacion=entrada.nextLine();
-					//entrada.nextLine();
 					Administradores admin=new Administradores(dni,usuario,nombreyAp,cal,titulacion);
-					//admin.getAdmin().add(admin);
 					usuarios.add(admin);
 					
 					break;
 				case 1:
 					System.out.println("Introduce tu departamento: ");
 					String departamento=entrada.nextLine();
-					//entrada.nextLine();
 					Profesores prof=new Profesores(dni,usuario,nombreyAp,cal,departamento);
-					//prof.getProfesores().add(prof);
 					usuarios.add(prof);
 					break;
 				case 2:
 					System.out.println("Introduce tu nivel de estudios: ");
 					String nivel=entrada.nextLine();
-					//entrada.nextLine();
 					Alumnos alum=new Alumnos(dni,usuario,nombreyAp,cal,nivel);
-					//alum.getAlumnos().add(alum);
 					usuarios.add(alum);
 					break;
 			}
 		}while(opc1>=3);
 	}
 	public static File buscarArchivo(String dni) {
-		Scanner leer;
 		File admin=new File("USUARIOS/");
 		File [] files=admin.listFiles();
 		for(File f : files) {
@@ -248,6 +242,7 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		leer.close();
 		return false;
 	}
 	public static void borrarArchivo(String ruta) {
@@ -257,7 +252,9 @@ public class App {
 	public static void visualizarUsuarios() {
 		Iterator it = usuarios.iterator();
 		while(it.hasNext()) {
+			System.out.println();
 			System.out.println(it.next().toString());
+			System.out.println();
 		}
 	}
 	public static void moverPapelera(File f) {
@@ -326,15 +323,107 @@ public class App {
 		for(File f : ficheros.listFiles()) {
 			pw.println("\t"+f.getName()+":");
 			for(File f1 : f.listFiles()) {
-				//System.out.println(f1.toString());
-				Scanner leer=new Scanner(f1.getName().substring(0,f1.getName().indexOf(".")));
-				//PrintWriter pw1=new PrintWriter(new FileWriter(f1));
-				System.out.println(leer.next());
+				File usuarios=new File(f1.getPath());
+				Scanner leer=new Scanner(usuarios);
+				pw.println("\t\t\t"+leer.next());
+				leer.close();
 			}
 		}
 		pw.close();
-		
-		
-		
 	}
+	public static void cargarArrayList() throws FileNotFoundException, ParseException{
+		File ficheros=new File("USUARIOS\\");
+		Scanner leer;
+		for(File f : ficheros.listFiles()) {
+			for(File x : f.listFiles()) {
+				File us=new File(x.getPath());
+				leer=new Scanner(us);
+				String[] d=leer.next().split(";");
+				leer.close();
+				if(f.toString().contains("ADMIN")) {
+					
+					if(d.length==5) {
+						Administradores admin;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[2];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[3]);
+						fecha.setTime(date);
+						String titulacion=d[4];
+						admin=new Administradores(dni,usuario,nombreapellidos,fecha,titulacion);
+						usuarios.add(admin);
+					}if(d.length==6) {
+						Administradores admin;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[2];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[4]);
+						fecha.setTime(date);
+						String titulacion=d[4];
+						admin=new Administradores(dni,usuario,nombreapellidos,fecha,titulacion);
+						usuarios.add(admin);
+					}
+					}
+				if(f.toString().contains("ALUMNOS")) {
+					if(d.length==5) {
+						Alumnos alumnos;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[2];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[3]);
+						fecha.setTime(date);
+						String estudios=d[4];
+						alumnos=new Alumnos(dni,usuario,nombreapellidos,fecha,estudios);
+						usuarios.add(alumnos);
+					}if(d.length==6) {
+						Alumnos alumnos;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[3];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[4]);
+						fecha.setTime(date);
+						String estudios=d[5];
+						alumnos=new Alumnos(dni,usuario,nombreapellidos,fecha,estudios);
+						usuarios.add(alumnos);
+					}
+					
+				}if(f.toString().contains("PROFESORES")) {
+					if(d.length==5) {
+						Profesores prof;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[2];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[3]);
+						fecha.setTime(date);
+						String departamento=d[4];
+						prof=new Profesores(dni,usuario,nombreapellidos,fecha,departamento);
+						usuarios.add(prof);
+					}if(d.length==6) {
+						Profesores prof;
+						String dni=d[0];
+						String usuario=d[1];
+						String nombreapellidos=d[3];
+						Calendar fecha=Calendar.getInstance();
+						SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+						Date date=sdf.parse(d[4]);
+						fecha.setTime(date);
+						String departamento=d[5];
+						prof=new Profesores(dni,usuario,nombreapellidos,fecha,departamento);
+						usuarios.add(prof);
+					}
+					
+				}
+				}
+				}
+			}
 }
